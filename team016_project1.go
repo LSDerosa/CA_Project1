@@ -515,10 +515,13 @@ func main() {
 
 	// String flag with default value "team16_out_dis.txt"
 	outputFile := flag.String("o", "team16_out", "Enter desired name for the output file")
-	*outputFile += "_dis.txt"
+
 	// Enable command-line parsing
 	flag.Parse()
-
+	//simulator output file
+	outputSimFile := *outputFile + "_sim.txt"
+	//disassembler output file
+	*outputFile += "_dis.txt"
 	openInputFile, err := os.Open(*inputFile)
 	if err != nil {
 		fmt.Println("Error opening input file:", err)
@@ -585,6 +588,82 @@ func main() {
 	}
 	//writing to file
 	_, err = writeOutputFile.WriteString(output)
+	if err != nil {
+		fmt.Println("Error writing to the file:", err)
+		// file.Close()
+		return
+	}
+	err = writeOutputFile.Close()
+	if err != nil {
+		return
+	}
+	//WRITE TO SIMULATOR FILE
+	writeOutputSimFile, err := os.OpenFile(outputSimFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
+	if err != nil {
+		fmt.Println("Error creating the file:", err)
+		return
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+
+		}
+	}(writeOutputSimFile)
+	//Initializing each variable used
+	instructionAddress := 96
+	cycle := 1
+	outputSim := ""
+	R0 := 0
+	R1 := 0
+	R2 := 0
+	R3 := 0
+	R4 := 0
+	R5 := 0
+	R6 := 0
+	R7 := 0
+	R8 := 0
+	R9 := 0
+	R10 := 0
+	R11 := 0
+	R12 := 0
+	R13 := 0
+	R14 := 0
+	R15 := 0
+	R16 := 0
+	R17 := 0
+	R18 := 0
+	R19 := 0
+	R20 := 0
+	R21 := 0
+	R22 := 0
+	R23 := 0
+	R24 := 0
+	R25 := 0
+	R26 := 0
+	R27 := 0
+	R28 := 0
+	R29 := 0
+	R30 := 0
+	R31 := 0
+	//write simulator format
+	for instructionAddress <= lineNumber {
+		outputSim += "====================\n"
+		outputSim += fmt.Sprintf("cycle:%d \t %d \t instruction string\n\n", cycle, instructionAddress)
+		outputSim += "registers:\n"
+		outputSim += fmt.Sprintf("r00:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+			R0, R1, R2, R3, R4, R5, R6, R7)
+		outputSim += fmt.Sprintf("r08:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+			R8, R9, R10, R11, R12, R13, R14, R15)
+		outputSim += fmt.Sprintf("r16:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+			R16, R17, R18, R19, R20, R21, R22, R23)
+		outputSim += fmt.Sprintf("r24:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+			R24, R25, R26, R27, R28, R29, R30, R31)
+		outputSim += "data:"
+		cycle++
+		instructionAddress += 4
+	}
+	//WRITE TO SIMULATOR FILE
+	_, err = writeOutputSimFile.WriteString(outputSim)
 	if err != nil {
 		fmt.Println("Error writing to the file:", err)
 		// file.Close()
